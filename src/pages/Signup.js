@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { signup } from '../api/auth';
+import { useHistory } from 'react-router-dom';
+
+
+
+
 export const Signup = () =>{
 
     const [userdetails, setuserdetails] = useState({email:''
         
     , password:''})
+    const history = useHistory();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
     
         try {
           await signup({ email, password });
-          navigate("/Home");
+          history.push('/home');
           
         } catch (error) {
           setError('Invalid Data');

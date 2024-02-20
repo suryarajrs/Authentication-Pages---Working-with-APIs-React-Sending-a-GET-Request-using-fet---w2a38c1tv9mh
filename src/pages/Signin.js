@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { signin } from '../api/auth';
+import { useHistory } from 'react-router-dom';
 
 
 export const Signin = ()=>{
-
+    const history = useHistory();
     const navigate = useNavigate();
 
     const [userdetails, setuserdetails]=useState({email:''
@@ -19,7 +20,7 @@ export const Signin = ()=>{
     
         try {
           await signin({ email, password });
-          navigate("/Home");
+          history.push('/home');
           
         } catch (error) {
           setError('Invalid Data');
