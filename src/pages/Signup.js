@@ -1,64 +1,26 @@
-// import React from 'react';
-// export const Signup = () =>{
-//     return(
-//         <div id="signin-page">
-//             <h1>Sign Up page</h1>
-
-//         </div>
-//     )
-// }
-
-// src/pages/Signup.js
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { signup } from '../api/auth';
-
-const Signup = () => {
-  const history = useHistory();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      await signup({ email, password });
-      history.push('/home');
-    } catch (error) {
-      setError('Invalid Data');
+import React from 'react';
+import {signup} from "../api/auth.js"
+import { useRef,useState } from 'react';
+export const Signup = () =>{
+    const emailRef = useRef(null);
+    const passwordRef = useRef(null);
+    const [error, setError] = useState(false);
+    const handleSubmit = (event) =>{
+        event.preventDefault();
+        const statusPromise = signup({email : emailRef.current.value, password : passwordRef.current.value});
+        const status = statusPromise.then(status => status.statusCode).catch(status => status.statusCode);
+        if(status === 422)
+            setError(true);
     }
-  };
-
-  return (
-    <div>
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    return(
+        <div id="signin-page">
+            <h1>Sign Up page</h1>
+            <form onSubmit={handleSubmit}>
+                <input type="email" id="email" required />
+                <input type="password" id="password" required/>
+                <button type="submit">Signup</button>
+            </form>
+            {error && <p class="error-txt">Wrong email or password</p>}
         </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Sign Up</button>
-        {error && <p className="error-txt">{error}</p>}
-      </form>
-    </div>
-  );
-};
-
-export default Signup;
+    )
+}

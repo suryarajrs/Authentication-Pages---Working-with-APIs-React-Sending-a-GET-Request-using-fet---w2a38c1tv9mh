@@ -1,66 +1,26 @@
-// import React from 'react';
-
-
-// export const Signin = ()=>{
-//     return(
-//         <div id="signin-page">
-//             <h1>Sign in page</h1>
-
-//         </div>
-//     )
-// }
-
-// src/pages/Signin.js
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { signin } from '../api/auth';
-
-const Signin = () => {
-  const history = useHistory();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      await signin({ email, password });
-      history.push('/home');
-    } catch (error) {
-      setError('Wrong email or password');
+import React from 'react';
+import {signin} from "../api/auth.js"
+import { useRef,useState } from 'react';
+export const Signin = ()=>{
+    const emailRef = useRef(null);
+    const passwordRef = useRef(null);
+    const [error, setError] = useState(false);
+    const handleSubmit = (event) =>{
+        event.preventDefault();
+        const statusPromise = signin({email : emailRef.current.value, password : passwordRef.current.value});
+        const status = statusPromise.then(status => status.statusCode).catch(status => status.statusCode);
+        if(status === 400)
+            setError(true);
     }
-  };
-
-  return (
-    <div>
-      <h2>Sign In</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    return(
+        <div id="signin-page">
+            <h1>Sign in page</h1>
+            <form onSubmit={handleSubmit}>
+                <input type="email" id="email" required ref={emailRef} />
+                <input type="password" id="password" required ref={passwordRef}/>
+                <button type="submit">Signin</button>
+            </form>
+            {error && <p class="error-txt">Wrong email or password</p>}
         </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Sign In</button>
-        {error && <p className="error-txt">{error}</p>}
-      </form>
-    </div>
-  );
-};
-
-export default Signin;
+    )
+}
